@@ -1,0 +1,19 @@
+{
+  "name": "node_app",
+  "version": "0.0.1",
+  "main": "app.coffee",
+  "repository": "",
+  "author": "",
+  "license": "MIT",
+  "dependencies" :
+    {
+      "coffee-script"    : "*",      
+      "commander"          : "*",      
+      "express"          : "*", 
+      "underscore"       : "*",
+      "underscore.string": "*",    
+      "handlebars": "*",          
+      "deferred": "*",
+      "mysql"           : "2.0.0-alpha9"      
+    }
+}
