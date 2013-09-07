@@ -26,6 +26,15 @@ new Tag({name: 'My Tag fff', id:3}).update().done (rs)->
   console.timeEnd('query')
   process.exit()###
 
+camel = (tableName)->
+  tmpString = tableName.split("_")
+  result = ""
+  _.forEach(tmpString, (each) ->
+      val = each.charAt(0).toUpperCase() + each.slice(1);
+      result += val       
+  )
+  result
+
 
 # When a file is run directly from Node, require.main is set to its module.
 if require.main == module
@@ -35,6 +44,8 @@ if require.main == module
     .option('-u, --username <username>', 'username', String, 'root')
     .option('-p, --password <password>', 'password', String, '')
     .option('-d, --database <database>', 'db')
+    .option('-n, --name <name>', 'name entities', String, 'entities')
+    .option('-t, --to <to>', 'to location', String, '')
     .parse(process.argv)
 
   tableInDb = "Tables_in_#{program.database}"
@@ -46,15 +57,38 @@ if require.main == module
     #host: program.host
   console.log connectionOptions
   con = mysql.createConnection(connectionOptions)
-  
+
+  entities = ''
   con.query('SHOW TABLES', (err, tables) ->
     _.forEach(tables, (each) ->      
       tableName = each[tableInDb]
-      con.query('SHOW COLUMNS FROM ' + tableName, (err, columns)->
-        console.log(columns)
+      template = Handlebars.compile("""
+      class {{tableNameCamel}} extends BaseEntity
+        {{tableNameCamel}}::_tableName = '{{tableName}}'
+      module.exports = Tag
+
+      """
       )
-    )    
+      entities += template({tableName: tableName, tableNameCamel: camel(tableName)})
+            
+    )  
+    nameEntities = program.to + program.name + ".coffee"
+    fs.writeFile nameEntities, entities , (err) ->
+      if err
+        console.log err
+      else
+        console.log "The file was saved!"
+      process.exit()
+
   )
+  ###fs = require("fs")
+  fs.writeFile "test.txt", tmp , (err) ->
+    if err
+      console.log err
+    else
+      console.log "The file was saved!" ###
 
 ###class Tag extends BaseEntity
   Tag::_tableName = 'tag'###
+
+  # entities.coffee
