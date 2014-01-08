@@ -1,2 +1,3 @@
-mysql-entitify
+Mysql-Entitify
 ==============
+Simple Knex entities generators
